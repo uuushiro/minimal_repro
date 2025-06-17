@@ -4,7 +4,37 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-async-graphql = { workspace = true }
-actix-web.workspace = true
+async-graphql = { workspace = true, features = [
+    "dataloader",
+    "chrono",
+    "decimal",
+    "tracing",
+] }
+async-trait.workspace = true
+common.workspace = true
 sql-entities.workspace = true
 sea-orm = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
+tokio = { workspace = true, features = ["rt"] }
+sea-query.workspace = true
+chrono = { workspace = true, features = ["serde"] }
+datadog-api-client.workspace = true
+# auth0-jwt-validator.workspace = true
+actix-web.workspace = true
+actix-web-httpauth.workspace = true
+tracing.workspace = true
+# proto.workspace = true
+serde_json.workspace = true
+uuid = { workspace = true, features = ["v7"] }
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
+sea-orm = { workspace = true, features = [
+    "sqlx-sqlite",
+    "runtime-tokio-rustls",
+] }
+rand = { workspace = true }
+pretty_assertions.workspace = true
+
+[lints]
+workspace = true

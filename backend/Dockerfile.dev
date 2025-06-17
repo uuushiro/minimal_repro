@@ -1,0 +1,25 @@
+FROM rust:1.84
+
+WORKDIR /app
+
+ENV CARGO_NET_GIT_FETCH_WITH_CLI=true
+ARG GITHUB_TOKEN
+ARG GIT_URL="https://git:${GITHUB_TOKEN}@github.com"
+RUN echo ${GIT_URL} > /root/credential
+RUN git config --global credential.helper 'store --file /root/credential'
+
+RUN cargo install cargo-watch
+RUN cargo install sea-orm-cli --version 1.1.7
+RUN rustup component add rustfmt clippy
+
+# mold インストール
+RUN apt-get update && apt-get install -y clang
+RUN ARCH=$(uname -m) \
+    && MOLD_VERSION="2.34.1" \
+    && MOLD_DIR_NAME="mold-${MOLD_VERSION}-${ARCH}-linux" \
+    && MOLD_TAR_FILE_NAME="${MOLD_DIR_NAME}.tar.gz" \
+    && wget "https://github.com/rui314/mold/releases/download/v${MOLD_VERSION}/${MOLD_TAR_FILE_NAME}" \
+    && tar -zxvf "${MOLD_TAR_FILE_NAME}" \
+    && cp "${MOLD_DIR_NAME}/bin/mold" /usr/local/bin/ \
+    && rm -rf "${MOLD_DIR_NAME}" \
+    && echo "[target.${ARCH}-unknown-linux-gnu]\nlinker = \"clang\"\nrustflags = [\"-C\", \"link-arg=-fuse-ld=/usr/local/bin/mold\"]" > /usr/local/cargo/config.toml

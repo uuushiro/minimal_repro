@@ -1,0 +1,74 @@
+services:
+  build-image:
+    build:
+      context: ./
+      dockerfile: Dockerfile.dev
+      args:
+        # private repository にあるライブラリ (e.g., otooshi) をダウンロードするのに必要
+        - GITHUB_TOKEN=${GITHUB_TOKEN}
+    image: j-reit-backend:latest
+
+  backend:
+    depends_on:
+      - build-image
+    image: j-reit-backend:latest
+    working_dir: /app/backend
+    environment:
+      - CARGO_NET_GIT_FETCH_WITH_CLI=true
+      - MY_SQL_USER=root
+      - MY_SQL_PASSWORD=password
+      - MY_SQL_HOST=mysql
+      - MY_SQL_DATABASE=j_reit
+      - CARGO_BUILD_TARGET_DIR=/rust-target
+      - DATA_HUB_GRAPHQL_ENDPOINT=http://host.docker.internal:20120/api/graphql
+      - AUTH0_ISSUER_URL=https://estie-dev.jp.auth0.com/
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://datadog-agent:4318
+      - OTEL_SERVICE_NAME=j-reit-backend
+      - OTEL_RESOURCE_ATTRIBUTES='deployment.environment=local,service.version=0.1'
+      - OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf
+      - RUST_LOG=info
+    command:
+      - /bin/sh
+      - -c
+      - |
+        echo https://git:${GITHUB_TOKEN}@github.com > /root/credential
+        git config --global credential.helper 'store --file /root/credential'
+        cargo watch -x run
+    ports:
+      - "8080:8080"
+    volumes:
+      - ../:/app
+      - rust-backend-cargo-cache:/usr/local/cargo/registry
+      - rust-backend-target-cache:/rust-target
+
+  internal-api:
+    depends_on:
+      - build-image
+    image: j-reit-backend:latest
+    working_dir: /app/backend
+    environment:
+      - CARGO_NET_GIT_FETCH_WITH_CLI=true
+      - MY_SQL_USER=root
+      - MY_SQL_PASSWORD=password
+      - MY_SQL_HOST=mysql
+      - MY_SQL_DATABASE=j_reit
+      - CARGO_BUILD_TARGET_DIR=/rust-target
+      - AUTH0_ISSUER_URL=https://estie-dev.jp.auth0.com/
+    command:
+      - /bin/sh
+      - -c
+      - |
+        echo https://git:${GITHUB_TOKEN}@github.com > /root/credential
+        git config --global credential.helper 'store --file /root/credential'
+        cargo watch -x "run -p internal-api --bin internal-api-server"
+    ports:
+      - "8081:8081"
+    volumes:
+      - ../:/app
+      - rust-backend-cargo-cache:/usr/local/cargo/registry
+      - rust-internal-api-target-cache:/rust-target
+
+volumes:
+  rust-backend-cargo-cache: null
+  rust-backend-target-cache: null
+  rust-internal-api-target-cache: null
