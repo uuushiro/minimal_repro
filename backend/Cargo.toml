@@ -9,7 +9,7 @@ actix-web.workspace = true
 async-graphql-actix-web.workspace = true
 
 [workspace]
-members = ["graphql", "rest"]
+members = ["graphql"]
 
 [workspace.dependencies]
 actix-web = "4.4"

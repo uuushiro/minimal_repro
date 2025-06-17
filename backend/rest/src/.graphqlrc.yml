@@ -1,4 +1,0 @@
-projects:
-  data-hub:
-    schema: 'schemas/data-hub/schema.gql'
-    documents: 'queries/**/*.graphql'
