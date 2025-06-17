@@ -12,7 +12,7 @@ async-graphql-actix-web.workspace = true
 members = ["graphql"]
 
 [workspace.dependencies]
-actix-web = "4"
+actix-web = "4.4"
 async-graphql = "6.0"
 async-graphql-actix-web = "6.0"
 
