@@ -4,4 +4,13 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+actix-web.workspace = true
+async-graphql-actix-web.workspace = true
+
+[workspace]
+members = []
+
+[workspace.dependencies]
 actix-web = "4.4"
+async-graphql = "6.0"
+async-graphql-actix-web = "6.0"
