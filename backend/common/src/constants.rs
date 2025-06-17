@@ -1,1 +1,0 @@
-pub const METERS_PER_MINUTE_ON_FOOT: i64 = 80;

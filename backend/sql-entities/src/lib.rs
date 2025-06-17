@@ -1,3 +1,1 @@
-mod entities;
-mod generated;
-pub use generated::*;
+// Minimal lib

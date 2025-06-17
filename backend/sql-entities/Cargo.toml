@@ -2,7 +2,5 @@
 name = "sql-entities"
 version = "0.1.0"
 edition = "2021"
-publish = false
 
 [dependencies]
-sea-orm = { workspace = true, features = ["macros"] }
